@@ -1,5 +1,7 @@
 # Guilloche Pattern Generator
 
+**[Try the Live Demo](https://id3vi5er.github.io/pattern-generator/)**
+
 A high-performance, web-based parametric curve and guilloche pattern generator. Built entirely with HTML5, CSS, and Vanilla JavaScript, it requires no backend and runs entirely in your browser. Perfect for designing complex security patterns, spirographs, rosettes, and generative geometric art.
 
 ## Architecture
