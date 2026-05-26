@@ -740,6 +740,110 @@ const Presets = (() => {
         }),
       ],
     },
+
+    /* -------------------------------------------------------------- */
+    'Harmonograph Mesh': {
+      description: 'Simulated 4-pendulum physics creating a 3D-like structural wireframe mesh.',
+      layers: [
+        makeLayer({
+          name: 'Pendulum Net',
+          type: 'harmonograph',
+          params: { A1: 150, f1: 3.01, p1: 0.2, d1: 0.001, A2: 150, f2: 2, p2: 0, d2: 0.001, A3: 150, f3: 3, p3: 0, d3: 0.001, A4: 150, f4: 2, p4: 1.57, d4: 0.001, steps: 15000, maxT: 100, copies: 1 },
+          style: {
+            strokeColor: '#38bdf8',
+            strokeWidth: 0.2,
+            opacity: 0.7,
+            blendMode: 'screen',
+          },
+        }),
+      ],
+    },
+
+    /* -------------------------------------------------------------- */
+    'Braided Torus': {
+      description: '3D projection of a torus knot forming an interlaced starry polygon.',
+      layers: [
+        makeLayer({
+          name: 'Knot 7/3',
+          type: 'torusKnot',
+          params: { p: 3, q: 7, R: 120, r: 60, steps: 4000, copies: 1 },
+          style: {
+            strokeColor: '#facc15',
+            strokeWidth: 0.6,
+            opacity: 0.9,
+            blendMode: 'screen',
+          },
+        }),
+        makeLayer({
+          name: 'Knot 7/3 Inner',
+          type: 'torusKnot',
+          params: { p: 3, q: 7, R: 120, r: 40, steps: 4000, copies: 1 },
+          style: {
+            strokeColor: '#fef08a',
+            strokeWidth: 0.4,
+            opacity: 0.7,
+            blendMode: 'screen',
+          },
+        }),
+      ],
+    },
+
+    /* -------------------------------------------------------------- */
+    'Fay Butterfly': {
+      description: 'Pure organic polar curve that flawlessly mimics the structure of a butterfly.',
+      layers: [
+        makeLayer({
+          name: 'Butterfly',
+          type: 'butterflyCurve',
+          params: { scale: 35, steps: 6000, copies: 1 },
+          style: {
+            strokeColor: '#ec4899',
+            strokeWidth: 0.5,
+            opacity: 0.85,
+            blendMode: 'screen',
+          },
+          transform: { x: 0, y: 30, rotation: 0, scaleX: 1, scaleY: 1 }
+        }),
+      ],
+    },
+
+    /* -------------------------------------------------------------- */
+    'Fractal Fern (L-System)': {
+      description: 'Biological branching structure generated using a formal grammar (L-System).',
+      layers: [
+        makeLayer({
+          name: 'Barnsley-like Fern',
+          type: 'lSystem',
+          params: { axiom: "X", rules: "X=F+[[X]-X]-F[-FX]+X;F=FF", angle: 25, stepLength: 4, iterations: 5, copies: 1 },
+          style: {
+            strokeColor: '#10b981',
+            strokeWidth: 0.5,
+            opacity: 0.8,
+            blendMode: 'screen',
+          },
+          transform: { x: 0, y: 150, rotation: 0, scaleX: 1, scaleY: -1 }
+        }),
+      ],
+    },
+    
+    /* -------------------------------------------------------------- */
+    'Sierpinski Polygon (L-System)': {
+      description: 'Perfect geometric Sierpinski triangle fractal rendered via Turtle graphics.',
+      layers: [
+        makeLayer({
+          name: 'Sierpinski Arrowhead',
+          type: 'lSystem',
+          params: { axiom: "YF", rules: "X=YF+XF+Y;Y=XF-YF-X", angle: 60, stepLength: 5, iterations: 6, copies: 1 },
+          style: {
+            strokeColor: '#3b82f6',
+            strokeWidth: 0.5,
+            opacity: 0.9,
+            blendMode: 'screen',
+          },
+          transform: { x: 0, y: 150, rotation: -30, scaleX: 1, scaleY: 1 }
+        }),
+      ],
+    },
   };
 
   /* ================================================================== */
@@ -805,6 +909,23 @@ const Presets = (() => {
       involute: {
         a: 8, maxTurns: 4,
         steps: 2000, copies: 1,
+      },
+      harmonograph: {
+        A1: 150, f1: 3.01, p1: 0.2, d1: 0.001,
+        A2: 150, f2: 2, p2: 0, d2: 0.001,
+        A3: 150, f3: 3, p3: 0, d3: 0.001,
+        A4: 150, f4: 2, p4: 1.57, d4: 0.001,
+        steps: 10000, maxT: 100, copies: 1,
+      },
+      torusKnot: {
+        p: 3, q: 7, R: 120, r: 40,
+        steps: 3000, copies: 1,
+      },
+      butterflyCurve: {
+        scale: 30, steps: 5000, copies: 1,
+      },
+      lSystem: {
+        axiom: "X", rules: "X=F+[[X]-X]-F[-FX]+X;F=FF", angle: 25, stepLength: 5, iterations: 5, copies: 1,
       },
     };
 

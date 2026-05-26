@@ -241,6 +241,10 @@
         { value: 'superformula', label: 'Superformula' },
         { value: 'maurerRose',   label: 'Maurer Rose' },
         { value: 'involute',     label: 'Involute' },
+        { value: 'harmonograph', label: 'Harmonograph' },
+        { value: 'torusKnot',    label: 'Torus Knot' },
+        { value: 'butterflyCurve',label: 'Butterfly Curve' },
+        { value: 'lSystem',      label: 'L-System (Fractal)' },
       ], (val) => {
         // Switch type and reset params to defaults
         const def = Presets.defaultLayer(val);
@@ -342,6 +346,52 @@
         mathRows.push(buildSliderRow('a (Radius)', p.a, 1, 30, 0.5, v => { p.a = v; scheduleRender(); }));
         mathRows.push(buildSliderRow('Turns', p.maxTurns, 1, 12, 1, v => { p.maxTurns = v; scheduleRender(); }));
         mathRows.push(buildSliderRow('Steps', p.steps, 500, 6000, 100, v => { p.steps = v; scheduleRender(); }));
+        mathRows.push(buildSliderRow('Copies', p.copies || 1, 1, 24, 1, v => { p.copies = v; scheduleRender(); }));
+        break;
+
+      case 'harmonograph':
+        mathRows.push(buildSliderRow('Amp 1', p.A1, 10, 300, 1, v => { p.A1 = v; scheduleRender(); }));
+        mathRows.push(buildSliderRow('Freq 1', p.f1, 0.01, 10, 0.01, v => { p.f1 = v; scheduleRender(); }));
+        mathRows.push(buildSliderRow('Phase 1', p.p1, 0, 6.28, 0.01, v => { p.p1 = v; scheduleRender(); }));
+        mathRows.push(buildSliderRow('Damp 1', p.d1, 0, 0.05, 0.0001, v => { p.d1 = v; scheduleRender(); }));
+        mathRows.push(buildSliderRow('Amp 2', p.A2, 10, 300, 1, v => { p.A2 = v; scheduleRender(); }));
+        mathRows.push(buildSliderRow('Freq 2', p.f2, 0.01, 10, 0.01, v => { p.f2 = v; scheduleRender(); }));
+        mathRows.push(buildSliderRow('Phase 2', p.p2, 0, 6.28, 0.01, v => { p.p2 = v; scheduleRender(); }));
+        mathRows.push(buildSliderRow('Damp 2', p.d2, 0, 0.05, 0.0001, v => { p.d2 = v; scheduleRender(); }));
+        mathRows.push(buildSliderRow('Amp 3', p.A3, 10, 300, 1, v => { p.A3 = v; scheduleRender(); }));
+        mathRows.push(buildSliderRow('Freq 3', p.f3, 0.01, 10, 0.01, v => { p.f3 = v; scheduleRender(); }));
+        mathRows.push(buildSliderRow('Phase 3', p.p3, 0, 6.28, 0.01, v => { p.p3 = v; scheduleRender(); }));
+        mathRows.push(buildSliderRow('Damp 3', p.d3, 0, 0.05, 0.0001, v => { p.d3 = v; scheduleRender(); }));
+        mathRows.push(buildSliderRow('Amp 4', p.A4, 10, 300, 1, v => { p.A4 = v; scheduleRender(); }));
+        mathRows.push(buildSliderRow('Freq 4', p.f4, 0.01, 10, 0.01, v => { p.f4 = v; scheduleRender(); }));
+        mathRows.push(buildSliderRow('Phase 4', p.p4, 0, 6.28, 0.01, v => { p.p4 = v; scheduleRender(); }));
+        mathRows.push(buildSliderRow('Damp 4', p.d4, 0, 0.05, 0.0001, v => { p.d4 = v; scheduleRender(); }));
+        mathRows.push(buildSliderRow('Max Time', p.maxT, 10, 500, 1, v => { p.maxT = v; scheduleRender(); }));
+        mathRows.push(buildSliderRow('Steps', p.steps, 1000, 30000, 1000, v => { p.steps = v; scheduleRender(); }));
+        mathRows.push(buildSliderRow('Copies', p.copies || 1, 1, 24, 1, v => { p.copies = v; scheduleRender(); }));
+        break;
+
+      case 'torusKnot':
+        mathRows.push(buildSliderRow('p (Axis)', p.p, 1, 20, 1, v => { p.p = v; scheduleRender(); }));
+        mathRows.push(buildSliderRow('q (Hole)', p.q, 1, 20, 1, v => { p.q = v; scheduleRender(); }));
+        mathRows.push(buildSliderRow('R (Major)', p.R, 10, 300, 1, v => { p.R = v; scheduleRender(); }));
+        mathRows.push(buildSliderRow('r (Minor)', p.r, 10, 200, 1, v => { p.r = v; scheduleRender(); }));
+        mathRows.push(buildSliderRow('Steps', p.steps, 500, 8000, 100, v => { p.steps = v; scheduleRender(); }));
+        mathRows.push(buildSliderRow('Copies', p.copies || 1, 1, 24, 1, v => { p.copies = v; scheduleRender(); }));
+        break;
+
+      case 'butterflyCurve':
+        mathRows.push(buildSliderRow('Scale', p.scale, 5, 100, 1, v => { p.scale = v; scheduleRender(); }));
+        mathRows.push(buildSliderRow('Steps', p.steps, 500, 12000, 100, v => { p.steps = v; scheduleRender(); }));
+        mathRows.push(buildSliderRow('Copies', p.copies || 1, 1, 24, 1, v => { p.copies = v; scheduleRender(); }));
+        break;
+
+      case 'lSystem':
+        mathRows.push(buildTextRow('Axiom', p.axiom, v => { p.axiom = v; scheduleRender(); }));
+        mathRows.push(buildTextRow('Rules', p.rules, v => { p.rules = v; scheduleRender(); }));
+        mathRows.push(buildSliderRow('Angle', p.angle, 1, 180, 0.5, v => { p.angle = v; scheduleRender(); }));
+        mathRows.push(buildSliderRow('Step Length', p.stepLength, 1, 50, 0.5, v => { p.stepLength = v; scheduleRender(); }));
+        mathRows.push(buildSliderRow('Iterations', p.iterations, 1, 8, 1, v => { p.iterations = v; scheduleRender(); }));
         mathRows.push(buildSliderRow('Copies', p.copies || 1, 1, 24, 1, v => { p.copies = v; scheduleRender(); }));
         break;
     }

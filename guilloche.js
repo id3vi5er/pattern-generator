@@ -12,8 +12,12 @@
  *   - Superformula     (Gielis superformula)
  *   - Maurer Rose      (discrete-sampled rose with line segments)
  *   - Involute         (involute of a circle)
+ *   - Harmonograph     (simulated pendulum physics)
+ *   - Torus Knot       (3D braided structure projection)
+ *   - Butterfly Curve  (Temple H. Fay organic polar curve)
+ *   - L-System         (Fractals, branching structures via turtle graphics)
  *
- * All generators return arrays of {x, y} points which are then
+ * All generators return arrays of {x, y} points (or null for jumps) which are then
  * converted to optimised SVG path strings.
  */
 
@@ -387,6 +391,178 @@ const Guilloche = (() => {
     return points;
   }
 
+  /**
+   * Harmonograph – simulates mechanical pendulums acting on a pen.
+   * Produces incredible 3D-like organic wireframes and structural nets.
+   */
+  function harmonograph(params) {
+    const {
+      A1 = 100, f1 = 2.01, p1 = Math.PI / 16, d1 = 0.001,
+      A2 = 100, f2 = 3,    p2 = 0,          d2 = 0.001,
+      A3 = 100, f3 = 3,    p3 = 0,          d3 = 0.001,
+      A4 = 100, f4 = 2,    p4 = Math.PI / 2,  d4 = 0.001,
+      steps = 10000, maxT = 100
+    } = params;
+
+    const points = [];
+    const dt = maxT / steps;
+
+    for (let i = 0; i <= steps; i++) {
+      const t = i * dt;
+      const x = A1 * Math.sin(f1 * t + p1) * Math.exp(-d1 * t) +
+                A2 * Math.sin(f2 * t + p2) * Math.exp(-d2 * t);
+      const y = A3 * Math.sin(f3 * t + p3) * Math.exp(-d3 * t) +
+                A4 * Math.sin(f4 * t + p4) * Math.exp(-d4 * t);
+      points.push({ x, y });
+    }
+    return points;
+  }
+
+  /**
+   * Torus Knot – 2D projection of a curve drawn on the surface of a torus.
+   * Great for braided structures and interlaced star polygons.
+   */
+  function torusKnot(params) {
+    const {
+      p = 3,            // wraps around axis of revolution
+      q = 7,            // wraps through the hole
+      R = 100,          // major radius
+      r = 40,           // minor radius
+      steps = 3000
+    } = params;
+
+    const maxTheta = 2 * Math.PI * q; // To close the loop
+    const dt = maxTheta / steps;
+    const points = [];
+
+    for (let i = 0; i <= steps; i++) {
+      const t = i * dt;
+      const rDist = R + r * Math.cos(p * t);
+      points.push({
+        x: rDist * Math.cos(q * t),
+        y: rDist * Math.sin(q * t)
+      });
+    }
+    return points;
+  }
+
+  /**
+   * Butterfly Curve – pure organic polar curve by Temple H. Fay.
+   */
+  function butterflyCurve(params) {
+    const {
+      scale = 30,
+      steps = 4000
+    } = params;
+
+    const maxTheta = 12 * Math.PI; // usually needs 12 Pi to close all details perfectly
+    const dt = maxTheta / steps;
+    const points = [];
+
+    for (let i = 0; i <= steps; i++) {
+      const t = i * dt;
+      const term1 = Math.exp(Math.cos(t));
+      const term2 = 2 * Math.cos(4 * t);
+      const term3 = Math.pow(Math.sin(t / 12), 5);
+      const r = scale * (term1 - term2 - term3);
+      points.push({
+        x: r * Math.cos(t),
+        y: r * Math.sin(t)
+      });
+    }
+    return points;
+  }
+
+  /**
+   * L-System (Turtle Graphics) – generates fractal structures and branching plants.
+   * Can produce isolated line segments using "null" in the points array.
+   */
+  function lSystem(params) {
+    const {
+      axiom = "F",
+      rules = "F=F+F-F-F+F", // Ex: "F=F+F-F-F+F;X=F-[[X]+X]+F[+FX]-X"
+      angle = 90,
+      stepLength = 10,
+      iterations = 4
+    } = params;
+
+    // Parse Rules
+    const ruleMap = {};
+    const rulesList = rules.split(/[;,]/);
+    for (let rule of rulesList) {
+      const parts = rule.split('=');
+      if (parts.length === 2) {
+        ruleMap[parts[0].trim()] = parts[1].trim();
+      }
+    }
+
+    // Limit iterations to prevent browser crash from exponential growth
+    const safeIterations = Math.min(iterations, 8);
+
+    // Expand axiom
+    let stateStr = axiom;
+    for (let i = 0; i < safeIterations; i++) {
+      let nextStr = "";
+      for (let char of stateStr) {
+        nextStr += ruleMap[char] || char;
+      }
+      stateStr = nextStr;
+      // Safety net for extreme lengths
+      if (stateStr.length > 250000) break;
+    }
+
+    // Turtle execution
+    const points = [];
+    let x = 0, y = 0, dir = -Math.PI / 2; // start pointing up
+    const stack = [];
+    const rad = angle * Math.PI / 180;
+
+    // Track bounding box to center the pattern later
+    let minX = 0, maxX = 0, minY = 0, maxY = 0;
+
+    points.push({ x, y });
+
+    for (let char of stateStr) {
+      if (char === 'F' || char === 'G') {
+        x += stepLength * Math.cos(dir);
+        y += stepLength * Math.sin(dir);
+        points.push({ x, y });
+        minX = Math.min(minX, x); maxX = Math.max(maxX, x);
+        minY = Math.min(minY, y); maxY = Math.max(maxY, y);
+      } else if (char === 'f') {
+        x += stepLength * Math.cos(dir);
+        y += stepLength * Math.sin(dir);
+        points.push(null); // pen up jump
+        points.push({ x, y });
+      } else if (char === '+') {
+        dir += rad;
+      } else if (char === '-') {
+        dir -= rad;
+      } else if (char === '[') {
+        stack.push({ x, y, dir });
+      } else if (char === ']') {
+        const s = stack.pop();
+        if (s) {
+          x = s.x; y = s.y; dir = s.dir;
+          points.push(null); // jump back without drawing
+          points.push({ x, y });
+        }
+      }
+    }
+
+    // Center the generated points
+    const midX = (minX + maxX) / 2;
+    const midY = (minY + maxY) / 2;
+    for (let i = 0; i < points.length; i++) {
+      if (points[i] !== null) {
+        points[i].x -= midX;
+        points[i].y -= midY;
+      }
+    }
+
+    return points;
+  }
+
   /* ================================================================== */
   /*  TRANSFORM: Rotate & Multiply                                       */
   /* ================================================================== */
@@ -402,10 +578,13 @@ const Guilloche = (() => {
       const angle = (2 * Math.PI * c) / copies;
       const cos = Math.cos(angle);
       const sin = Math.sin(angle);
-      result.push(points.map(p => ({
-        x: p.x * cos - p.y * sin,
-        y: p.x * sin + p.y * cos,
-      })));
+      result.push(points.map(p => {
+        if (p === null) return null;
+        return {
+          x: p.x * cos - p.y * sin,
+          y: p.x * sin + p.y * cos,
+        };
+      }));
     }
     return result;
   }
@@ -416,17 +595,30 @@ const Guilloche = (() => {
 
   /**
    * Convert an array of {x,y} points into an SVG path `d` attribute string.
-   * Uses M for the first point, then L for subsequent points.
+   * Uses M for the first point (or after a null jump), then L for subsequent points.
    * Coordinates are rounded to 2 decimals for compact file size.
    */
   function pointsToPath(points) {
     if (!points.length) return '';
     const fmt = (v) => Math.round(v * 100) / 100;
-    let d = `M ${fmt(points[0].x)} ${fmt(points[0].y)}`;
-    for (let i = 1; i < points.length; i++) {
-      d += ` L ${fmt(points[i].x)} ${fmt(points[i].y)}`;
+    
+    let d = '';
+    let isFirst = true;
+
+    for (let i = 0; i < points.length; i++) {
+      const p = points[i];
+      if (p === null) {
+        isFirst = true;
+        continue;
+      }
+      if (isFirst) {
+        d += `M ${fmt(p.x)} ${fmt(p.y)}`;
+        isFirst = false;
+      } else {
+        d += ` L ${fmt(p.x)} ${fmt(p.y)}`;
+      }
     }
-    return d;
+    return d.trim();
   }
 
   /**
@@ -467,6 +659,18 @@ const Guilloche = (() => {
       case 'involute':
         points = involute(layer.params);
         break;
+      case 'harmonograph':
+        points = harmonograph(layer.params);
+        break;
+      case 'torusKnot':
+        points = torusKnot(layer.params);
+        break;
+      case 'butterflyCurve':
+        points = butterflyCurve(layer.params);
+        break;
+      case 'lSystem':
+        points = lSystem(layer.params);
+        break;
       default:
         points = hypotrochoid(layer.params);
     }
@@ -491,6 +695,10 @@ const Guilloche = (() => {
     superformula,
     maurerRose,
     involute,
+    harmonograph,
+    torusKnot,
+    butterflyCurve,
+    lSystem,
     rotateMultiply,
     pointsToPath,
     generateLayer,

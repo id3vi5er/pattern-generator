@@ -28,6 +28,10 @@ The core engine (`guilloche.js`) supports a wide array of mathematical curves:
 8.  **Superformula (Gielis)**: A versatile formula for generating stars, polygons, and organic shapes.
 9.  **Maurer Rose**: Discretely sampled rose curves connected by line segments for crystalline webs.
 10. **Involute**: The curve traced by unwinding a taut string from a circle.
+11. **Harmonograph**: Simulates physical pendulums, creating incredible 3D-like organic wireframes and structural nets.
+12. **Torus Knot**: 2D projection of a curve drawn on a 3D torus, perfect for braided geometry and interlaced knots.
+13. **Butterfly Curve**: A pure organic polar curve by Temple H. Fay that flawlessly mimics butterfly wings.
+14. **L-System (Turtle Graphics)**: A formal grammar system producing fractal structures, biological branching (ferns, trees), and polygons (Sierpinski, Koch). Includes a custom `rule` string parser!
 
 ## Key Features
 
