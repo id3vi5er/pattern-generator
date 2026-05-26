@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Guilloche Pattern Generator</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div id="app">
+
+  <!-- ============================================================ -->
+  <!--  HEADER                                                       -->
+  <!-- ============================================================ -->
+  <header id="header">
+    <!-- Mobile sidebar toggle -->
+    <button class="sidebar-toggle canvas-tool-btn" id="btn-sidebar-toggle" title="Toggle Sidebar">&#9776;</button>
+
+    <h1>Guilloche <span>Pattern Generator</span></h1>
+
+    <div class="header-spacer"></div>
+
+    <!-- Preset selector -->
+    <select id="preset-select" title="Load a preset pattern">
+      <option value="">-- Load Preset --</option>
+    </select>
+
+    <!-- Export buttons -->
+    <button class="btn" id="btn-export-svg" title="Export as SVG file">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      SVG
+    </button>
+    <button class="btn" id="btn-export-png" title="Export as PNG image">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      PNG
+    </button>
+    <button class="btn" id="btn-copy-svg" title="Copy SVG markup to clipboard">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+      Copy
+    </button>
+  </header>
+
+  <!-- ============================================================ -->
+  <!--  SIDEBAR                                                      -->
+  <!-- ============================================================ -->
+  <aside id="sidebar">
+
+    <!-- Layer Manager -->
+    <div class="section-header">
+      Layers
+      <button id="btn-add-layer" title="Add new layer">+</button>
+    </div>
+    <div id="layer-list">
+      <!-- Dynamically populated -->
+    </div>
+
+    <!-- Parameter Controls -->
+    <div class="section-header" id="params-header">
+      Parameters
+    </div>
+    <div id="params-panel">
+      <div class="empty-state">Select or add a layer to edit parameters.</div>
+    </div>
+
+  </aside>
+
+  <!-- ============================================================ -->
+  <!--  CANVAS AREA                                                  -->
+  <!-- ============================================================ -->
+  <main id="canvas-area">
+
+    <!-- Main SVG canvas -->
+    <svg id="canvas-svg" xmlns="http://www.w3.org/2000/svg">
+      <defs id="svg-defs"></defs>
+      <g id="svg-transform">
+        <image id="svg-ref-image" x="0" y="0" width="0" height="0" preserveAspectRatio="xMidYMid meet" opacity="0.5" style="display: none;"></image>
+        <g id="svg-grid"></g>
+        <g id="svg-layers"></g>
+      </g>
+    </svg>
+
+    <!-- Canvas toolbar -->
+    <div id="canvas-toolbar">
+      <!-- Hidden file input for reference image -->
+      <input type="file" id="ref-image-input" accept="image/*" style="display: none;">
+      <button class="canvas-tool-btn" id="btn-load-ref" title="Load Reference Image (Background)">&#128444;</button>
+      <button class="canvas-tool-btn" id="btn-zoom-in" title="Zoom In">+</button>
+      <button class="canvas-tool-btn" id="btn-zoom-out" title="Zoom Out">&minus;</button>
+      <button class="canvas-tool-btn" id="btn-zoom-fit" title="Fit to View">&#8634;</button>
+      <button class="canvas-tool-btn" id="btn-toggle-grid" title="Toggle Grid">&#9638;</button>
+    </div>
+
+    <!-- Reference Image Controls (hidden by default) -->
+    <div id="ref-image-controls" style="display: none; position: absolute; top: 50px; right: 12px; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: var(--radius); padding: 12px; z-index: 10; width: 220px;">
+      <div style="font-size: 11px; font-weight: 600; color: var(--text-secondary); margin-bottom: 8px; display: flex; justify-content: space-between;">
+        Reference Image
+        <button id="btn-clear-ref" style="background: none; border: none; color: var(--danger); cursor: pointer;">Remove</button>
+      </div>
+      <div class="control-row" style="grid-template-columns: 60px 1fr 40px; margin-bottom: 4px;">
+        <label>Opacity</label>
+        <input type="range" id="ref-opacity-slider" min="0" max="1" step="0.05" value="0.5">
+        <input type="number" id="ref-opacity-num" min="0" max="1" step="0.05" value="0.5" style="padding: 2px;">
+      </div>
+      <div class="control-row" style="grid-template-columns: 60px 1fr 40px; margin-bottom: 4px;">
+        <label>Scale</label>
+        <input type="range" id="ref-scale-slider" min="0.1" max="5" step="0.1" value="1">
+        <input type="number" id="ref-scale-num" min="0.1" max="5" step="0.1" value="1" style="padding: 2px;">
+      </div>
+    </div>
+
+    <!-- Zoom indicator -->
+    <div id="zoom-indicator">100%</div>
+
+    <!-- Stats bar -->
+    <div id="stats-bar">Points: 0 &middot; Render: 0 ms</div>
+
+  </main>
+
+</div>
+
+<!-- Toast notification -->
+<div id="toast"></div>
+
+<!-- ============================================================ -->
+<!--  EXPORT OPTIONS MODAL                                         -->
+<!-- ============================================================ -->
+<div class="modal-overlay" id="export-modal">
+  <div class="modal">
+    <h2>SVG Export Options</h2>
+
+    <div class="control-row">
+      <label>Width (px)</label>
+      <input type="number" id="export-width" value="800" min="100" max="10000">
+    </div>
+    <div class="control-row">
+      <label>Height (px)</label>
+      <input type="number" id="export-height" value="800" min="100" max="10000">
+    </div>
+    <div class="control-row">
+      <label>Background</label>
+      <select id="export-bg">
+        <option value="transparent">Transparent</option>
+        <option value="#ffffff">White</option>
+        <option value="#0f1117">Dark (App bg)</option>
+        <option value="custom">Custom...</option>
+      </select>
+    </div>
+    <div class="control-row" id="export-bg-custom-row" style="display:none;">
+      <label>Custom Color</label>
+      <input type="color" id="export-bg-custom" value="#0f1117">
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn" id="btn-export-cancel">Cancel</button>
+      <button class="btn btn-accent" id="btn-export-confirm">Export SVG</button>
+    </div>
+  </div>
+</div>
+
+<!-- Scripts -->
+<script src="guilloche.js"></script>
+<script src="presets.js"></script>
+<script src="app.js"></script>
+
+</body>
+</html>
